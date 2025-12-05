@@ -30,7 +30,7 @@ function countNeighbors (grid, x, y) {
     return checkNeighbors(grid, x, y).length;
 }
 
-const allNeighbors = [];
+let allNeighbors = [];
 for(let i = 0; i < grid.length; i++) {
     for(let j = 0; j < grid[0].length; j++) {
         if(grid[i][j] !== '@') continue;
@@ -42,3 +42,43 @@ for(let i = 0; i < grid.length; i++) {
 const forkliftAccessible = allNeighbors.filter(cell => cell.count < 4);
 
 console.log(forkliftAccessible.length);
+
+function removeRollofPaper(grid, forkliftAccessible) {
+    for(const cell of forkliftAccessible) {
+        const [x, y] = cell.position;
+        grid[x][y] = 'x';
+    }
+}
+
+function removeMarked(grid, mark='x') {
+    for(let i = 0; i < grid.length; i++) {
+        for(let j = 0; j < grid[0].length; j++) {
+            if(grid[i][j] === mark) {
+                grid[i][j] = '.';
+            }
+        }
+    }
+}
+
+let iterations = 0;
+let totalRemoved = 0;
+
+do {
+  allNeighbors = [];
+  removeMarked(grid);
+  for(let i = 0; i < grid.length; i++) {
+      for(let j = 0; j < grid[0].length; j++) {
+          if(grid[i][j] !== '@') continue;
+          const count = countNeighbors(grid, i, j);
+          allNeighbors.push({ position: [i, j], count });
+      }
+  }
+  const forkliftAccessible = allNeighbors.filter(cell => cell.count < 4);
+  const removed = forkliftAccessible.length;
+  removeRollofPaper(grid, forkliftAccessible);
+  iterations++;
+  totalRemoved += removed;
+  if(removed === 0) break;
+} while(true);
+
+console.log(totalRemoved);
