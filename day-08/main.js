@@ -64,5 +64,25 @@ for (let i = 0; i < junctionBoxes.length; i++) {
 }
 
 const sizes = Array.from(circuits.values()).map(c => c.length).sort((a,b) => b - a);
-const result = sizes.slice(0, 3).reduce((a,b) => a * b, 1);
+let result = sizes.slice(0, 3).reduce((a,b) => a * b, 1);
+console.log(result);
+
+function countCircuits() {
+  const roots = new Set();
+  for (let i = 0; i < junctionBoxes.length; i++) {
+    roots.add(find(i));
+  }
+  return roots.size;
+}
+
+let lastPair = null;
+for (let p = 1000; p < allPairs.length; p++) {
+  const pair = allPairs[p];
+  if (union(pair.i, pair.j)) {
+    lastPair = pair;
+    if (countCircuits() === 1) break;
+  }
+}
+
+result = junctionBoxes[lastPair.i].x * junctionBoxes[lastPair.j].x;
 console.log(result);
